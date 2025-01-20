@@ -19,7 +19,8 @@ public class LoginController {
     @GetMapping("/")
     public String home(Model model, HttpServletRequest request) throws UnsupportedEncodingException {
         model.addAttribute("nome", CookieService.getCookie(request, "nome"));
-        return "home";
+        model.addAttribute("id", CookieService.getCookie(request, "id"));
+        return "index";
     }
 
     @GetMapping("/login")
@@ -33,7 +34,7 @@ public class LoginController {
                             Model model,
                             HttpServletResponse response) throws UnsupportedEncodingException {
 
-        UsuarioModel usuarioLogado = UsuarioService.buscarUsuario(email, senha);
+        UsuarioModel usuarioLogado = UsuarioService.buscarUsuarioPorEmailSenha(email, senha);
 
         if(usuarioLogado == null){
             model.addAttribute("erro", "ERRO: Email ou senha incorreta!");
@@ -51,26 +52,5 @@ public class LoginController {
         return "/login";
     }
 
-    @GetMapping("/cadastroUsuario")
-    public String getCadastroUsuario() {
-        return "cadastroUsuario";
-    }
 
-    @PostMapping("/cadastroUsuario")
-    public String postCadastroUsuario(@RequestParam("nome") String nome,
-                                      @RequestParam("email") String email,
-                                      @RequestParam("senha") String senha,
-                                      Model model
-                                      ) {
-
-        if(UsuarioService.cadastrarUsuario(nome, email, senha) != null){
-            model.addAttribute("sla", "cadastrado com sucesso!");
-            return "/login";
-        }else{
-            model.addAttribute("sla", "nao deu boa!");
-            return "/cadastroUsuario";
-        }
-
-
-    }
 }
