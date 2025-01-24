@@ -27,20 +27,8 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    public static UsuarioModel cadastrarUsuario(@Valid String nome,
-                                                @Valid String email,
-                                                @Valid String senha) {
-        if(nome.trim().isEmpty() || email.trim().isEmpty() || senha.trim().isEmpty()) {
-            return null;
-        }else{
-            UsuarioModel usuario = new UsuarioModel();
-            usuario.setNome(nome);
-            usuario.setEmail(email);
-            usuario.setSenha(senha);
-            usuarioRepository.save(usuario);
-
-            return usuario;
-        }
+    public static UsuarioModel cadastrarUsuario(UsuarioModel usuario) {
+        return usuarioRepository.save(usuario);
     }
 
     public static boolean excluirUsuarioPorId(Long id){
