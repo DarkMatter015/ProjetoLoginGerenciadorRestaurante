@@ -1,29 +1,63 @@
 package br.app.appLogin.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity
-@Table(name = "usuarios")
-public class UsuarioModel {
-
+@Table(name = "Usuarios")
+public class UsuarioModel implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    @NotBlank(message = "O nome deve ser informado")
-    @Size(min = 2, message = "O nome deve ter pelo menos 2 caracteres")
     private String nome;
-
-    @NotBlank(message = "O email deve ser informado")
     private String email;
-
-    @NotBlank(message = "A senha deve ser informada")
-    @Size(min = 6, message = "A senha deve conter pelo menos 6 caracteres")
     private String senha;
+    private String role;
 
-    public long getId() {
+    // Métodos do UserDetails
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
+    }
+
+    @Override
+    public String getPassword() {
+        return senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return email; // Usa email como username
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+
+    public Long getId() {
         return id;
     }
 
@@ -43,11 +77,15 @@ public class UsuarioModel {
         this.email = email;
     }
 
-    public String getSenha() {
-        return senha;
-    }
-
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
