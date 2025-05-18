@@ -1,57 +1,43 @@
-<!doctype html>
-<html lang="pt-br" data-bs-theme="dark">
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Edita Usuário</title>
+    <title>Editar Usuário</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="../static/css/style.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-
-        html, body{
-            height: 100%;
-            font-family: "Poppins", serif;
-        }
-
-        .form-container{
-            background-color: #575757;
-            max-width: 450px;
-            padding: 1rem;
-            border-radius: 0.5rem;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<body class="d-flex align-itens-center py-4 bg-body-tertiary">
+<body class="d-flex align-items-center py-4 bg-body-tertiary">
 <main class="w-100 m-auto form-container">
-    <form th:action="@{/editar/{id}(id=${usuario.id})}" method="post">
-        <h1 class="h2 mb-3 fw-normal">Edição de Usuário</h1>
+    <form th:action="@{/editar/{id}(id=${id})}" th:object="${usuario}" method="post">
+        <div class="alert alert-danger alert-dismissible fade show" th:if="${mensagemErro}">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <span th:text="${mensagemErro}"></span>
+        </div>
+        <h1 class="h2 mb-3 fw-normal">Editar Usuário</h1>
         <div class="mb-3 form-floating">
-            <input th:field="*{usuario.nome}" required type="text" name="nome" class="form-control" id="floatingInput" aria-describedby="nome" placeholder="nome">
-            <label for="floatingInput">Nome do Usuário</label>
+            <input type="text" th:field="*{nome}" class="form-control" id="nome" placeholder="Seu nome" required>
+            <label for="nome">Nome</label>
+            <span th:errors="*{nome}" class="text-danger"></span>
         </div>
         <div class="mb-3 form-floating">
-            <input th:field="*{usuario.email}" required type="email" name="email" class="form-control" id="floatingInput1" aria-describedby="emailHelp" placeholder="exemplo@gmail.com">
-            <label for="floatingInput1">E-mail</label>
+            <input type="email" th:field="*{email}" class="form-control" id="email" placeholder="exemplo@gmail.com" required>
+            <label for="email">E-mail</label>
+            <span th:errors="*{email}" class="text-danger"></span>
         </div>
         <div class="mb-3 form-floating">
-            <input required type="password" name="senha" class="form-control" id="floatingInput2" placeholder="Digite sua senha">
-            <label for="floatingInput2">Senha</label>
+            <input type="password" th:field="*{senha}" class="form-control" id="senha" placeholder="Nova senha (opcional)">
+            <label for="senha">Nova Senha (opcional)</label>
         </div>
         <div class="mb-3 form-floating">
-            <input required type="password" name="confirmarSenha" class="form-control" id="floatingInput3" placeholder="Confirme sua senha">
-            <label for="floatingInput3">Confirme sua senha</label>
+            <input type="password" th:field="*{confirmarSenha}" class="form-control" id="confirmarSenha" placeholder="Confirme a nova senha">
+            <label for="confirmarSenha">Confirmar Nova Senha (opcional)</label>
         </div>
-        <div class="mb-3 form-floating">
-            <a href="/" class="btn btn-secondary mb-3">Voltar</a>
-            <button type="submit" class="btn btn-primary w-100 py-2">Cadastrar</button>
-        </div>
-
+        <button type="submit" class="btn btn-primary w-100 py-2">Salvar</button>
     </form>
+    <a th:href="@{/listarUsuarios}" class="btn btn-secondary mt-3 w-100">Voltar</a>
 </main>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
