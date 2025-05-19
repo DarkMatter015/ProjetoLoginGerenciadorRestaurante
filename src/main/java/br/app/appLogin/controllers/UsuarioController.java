@@ -1,12 +1,11 @@
 package br.app.appLogin.controllers;
 
 import br.app.appLogin.dtos.UsuarioDTO;
+import br.app.appLogin.exceptions.UsuarioAtualLogadoException;
 import br.app.appLogin.exceptions.UsuarioNaoEncontradoException;
 import br.app.appLogin.models.UsuarioModel;
 import br.app.appLogin.services.UsuarioService;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,7 +19,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class UsuarioController {
 
-    private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
     private final UsuarioService usuarioService;
 
     public UsuarioController(UsuarioService usuarioService) {
@@ -111,7 +109,7 @@ public class UsuarioController {
         try {
             usuarioService.excluirUsuarioPorId(id);
             attributes.addFlashAttribute("msg", "Usuário excluído com sucesso!");
-        } catch (UsuarioNaoEncontradoException e) {
+        } catch (UsuarioNaoEncontradoException | UsuarioAtualLogadoException e) {
             attributes.addFlashAttribute("erro", e.getMessage());
         }
         return "redirect:/listarUsuarios";

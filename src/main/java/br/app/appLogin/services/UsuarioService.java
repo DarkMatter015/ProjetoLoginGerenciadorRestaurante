@@ -1,11 +1,14 @@
 package br.app.appLogin.services;
 
 import br.app.appLogin.dtos.UsuarioDTO;
+import br.app.appLogin.exceptions.UsuarioAtualLogadoException;
 import br.app.appLogin.exceptions.UsuarioNaoEncontradoException;
 import br.app.appLogin.models.UsuarioModel;
 import br.app.appLogin.repositories.UsuarioRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -72,11 +75,16 @@ public class UsuarioService {
         return usuarioRepository.save(usuarioExistente);
     }
 
-    public void excluirUsuarioPorId(Long id) throws UsuarioNaoEncontradoException {
+    public void excluirUsuarioPorId(Long id) throws UsuarioNaoEncontradoException, UsuarioAtualLogadoException {
         logger.info("Excluindo usuário com ID: {}", id);
 
-        if (!usuarioRepository.existsById(id)) {
-            throw new UsuarioNaoEncontradoException("Usuário com ID: " + id + " não encontrado!");
+        UsuarioModel usuario = usuarioRepository.findById(id)
+                .orElseThrow( () -> new UsuarioNaoEncontradoException("Usuário com ID: " + id + " não encontrado!"));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(authentication != null && authentication.getName() != null && usuario.getEmail().equals(authentication.getName())) {
+            throw new UsuarioAtualLogadoException("Você não pode excluir sua própria conta enquanto estiver logado!");
         }
         usuarioRepository.deleteById(id);
     }
