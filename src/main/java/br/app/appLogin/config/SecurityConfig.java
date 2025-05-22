@@ -23,8 +23,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/cadastroUsuario").permitAll()
-                        .requestMatchers("/listarUsuarios", "/editar/**", "/excluir/**").authenticated()
+                        .requestMatchers("/", "/login", "/cadastroUsuario", "/css/**").permitAll()
+                        .requestMatchers("/listarUsuarios", "/editar/**", "/excluir/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -39,7 +39,10 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID")
                         .permitAll()
                 )
-                .csrf(csrf -> csrf.disable()); // CSRF disabled as per your setup
+                .exceptionHandling(ex -> ex
+                        .accessDeniedPage("/acesso-negado")
+                )
+                .csrf(csrf -> csrf.disable());
         return http.build();
     }
 
@@ -50,8 +53,8 @@ public class SecurityConfig {
                 var usuario = usuarioService.findByEmail(username);
                 return org.springframework.security.core.userdetails.User
                         .withUsername(usuario.getEmail())
-                        .password(usuario.getPassword())
-                        .roles("USER")
+                        .password(usuario.getSenha())
+                        .roles(usuario.getRole().getName())
                         .build();
             } catch (Exception e) {
                 throw new UsernameNotFoundException("Usuário não encontrado: " + username);

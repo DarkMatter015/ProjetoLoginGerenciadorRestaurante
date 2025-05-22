@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-br" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -12,7 +12,13 @@
 <main class="w-100 m-auto text-center">
     <h1 class="h2 mb-3 fw-normal">Bem-vindo, <span th:text="${nome} ?: 'Visitante'"></span>!</h1>
     <div th:if="${nome}">
-        <a th:href="@{/listarUsuarios}" class="btn btn-primary m-2">Listar Usuários</a>
+        <div class="alert alert-danger alert-dismissible fade show" th:if="${erro}">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <span th:text="${erro.toString()}"></span>
+        </div>
+        <div sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/listarUsuarios}" class="btn btn-primary m-2">Listar Usuários</a>
+        </div>
         <a th:href="@{/sair}" class="btn btn-secondary m-2">Sair</a>
     </div>
     <div th:unless="${nome}">
