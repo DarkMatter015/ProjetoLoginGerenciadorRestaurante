@@ -1,14 +1,16 @@
 package br.app.appLogin.services;
 
 import br.app.appLogin.dtos.UsuarioDTO;
-import br.app.appLogin.exceptions.UsuarioAtualLogadoException;
 import br.app.appLogin.exceptions.UsuarioNaoEncontradoException;
+import br.app.appLogin.exceptions.UsuarioAtualLogadoException;
+import br.app.appLogin.models.RoleModel;
 import br.app.appLogin.models.UsuarioModel;
+import br.app.appLogin.repositories.RoleRepository;
 import br.app.appLogin.repositories.UsuarioRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +21,12 @@ public class UsuarioService {
 
     private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
     private final UsuarioRepository usuarioRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public UsuarioService(UsuarioRepository usuarioRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -30,6 +34,18 @@ public class UsuarioService {
         logger.info("Buscando usuário com email: {}", email);
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário com email " + email + " não encontrado"));
+    }
+
+    public UsuarioModel cadastrarUsuario(UsuarioModel usuario) {
+        logger.info("Cadastrando usuário com email: {}", usuario.getEmail());
+        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email já cadastrado");
+        }
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        RoleModel userRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new RuntimeException("USER role not found"));
+        usuario.setRole(userRole);
+        return usuarioRepository.save(usuario);
     }
 
     public List<UsuarioModel> listarUsuarios() {
@@ -43,23 +59,14 @@ public class UsuarioService {
                 .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário com ID: " + id + " não encontrado!"));
     }
 
-    public UsuarioModel cadastrarUsuario(UsuarioModel usuario) {
-        logger.info("Cadastrando usuário com email: {}", usuario.getEmail());
-        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email já cadastrado");
-        }
-        usuario.setSenha(passwordEncoder.encode(usuario.getPassword()));
-        return usuarioRepository.save(usuario);
-    }
-
     public UsuarioModel atualizarUsuario(Long id, UsuarioDTO usuarioDTO) throws UsuarioNaoEncontradoException {
         logger.info("Atualizando usuário com ID: {}", id);
-
         UsuarioModel usuarioExistente = usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário com ID: " + id + " não encontrado!"));
 
-        if (!usuarioExistente.getEmail().equals(usuarioDTO.getEmail()) && usuarioRepository.findByEmail(usuarioDTO.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email já cadastrado!");
+        if (!usuarioExistente.getEmail().equals(usuarioDTO.getEmail()) &&
+                usuarioRepository.findByEmail(usuarioDTO.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email já cadastrado");
         }
 
         usuarioExistente.setNome(usuarioDTO.getNome());
@@ -67,7 +74,7 @@ public class UsuarioService {
 
         if (usuarioDTO.getSenha() != null && !usuarioDTO.getSenha().isEmpty()) {
             if (!usuarioDTO.isSenhasIguais()) {
-                throw new IllegalArgumentException("As senhas precisam ser iguais!");
+                throw new IllegalArgumentException("As senhas precisam ser iguais");
             }
             usuarioExistente.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
         }
@@ -79,13 +86,14 @@ public class UsuarioService {
         logger.info("Excluindo usuário com ID: {}", id);
 
         UsuarioModel usuario = usuarioRepository.findById(id)
-                .orElseThrow( () -> new UsuarioNaoEncontradoException("Usuário com ID: " + id + " não encontrado!"));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário com ID: " + id + " não encontrado!"));
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if(authentication != null && authentication.getName() != null && usuario.getEmail().equals(authentication.getName())) {
+        if (authentication != null && authentication.getName() != null &&
+                usuario.getEmail().equals(authentication.getName())) {
             throw new UsuarioAtualLogadoException("Você não pode excluir sua própria conta enquanto estiver logado!");
         }
+
         usuarioRepository.deleteById(id);
     }
 }
