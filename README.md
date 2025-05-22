@@ -25,10 +25,6 @@ Este é um sistema de gerenciamento para restaurantes, desenvolvido em Java util
   - (Irá ser implementado) API de envio de e-mails (exemplo: JavaMailSender)
 - **Frontend**: Bootstrap, HTML5, CSS3 (Bootstrap), JavaScript
 
-## EM DESENVOLVIMENTO
-- Padronizar e mudar o acesso aos campos do formulário nos Controllers e Services. Atualmente estou pegando por atributo pelo @RequestParam mas vou mudar para receber o objeto inteiro via th:object no formulário, afim de validar melhor no Service os campos obrigatórios.
-- Criar telas de cadastro e listagem dos itens do cardápio para serem associadas nas mesas do restaurante.
-
 ## PRÓXIMAS ISSUES 
 - (BANCO/BACKEND) Criar banco de dados (Models/Entities) das mesas, itens do cardápio e clientes sendo relacionadas entre eles.
 - (FRONTEND) Criar telas de cadastro de itens e clientes.
