@@ -79,3 +79,27 @@ footer {
 .navbar-brand {
     font-weight: 600;
 }
+
+
+
+.table-square {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.5rem;
+    border-radius: 10px;
+    margin: 10px auto;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+}
+.table-square:hover {
+    transform: scale(1.05);
+}
+.table-available { background-color: #28a745; }
+.table-occupied { background-color: #dc3545; }
+.table-reserved { background-color: #ffc107; }

@@ -32,10 +32,11 @@ public class UsuarioController {
     }
 
     @PostMapping("/cadastroUsuario")
-    public String postCadastroUsuario(@ModelAttribute("novoUsuario") @Valid UsuarioDTO usuarioDTO,
-                                      BindingResult erros,
-                                      RedirectAttributes attributes,
-                                      Model model) {
+    public String postCadastroUsuario(
+            @ModelAttribute("novoUsuario") @Valid UsuarioDTO usuarioDTO,
+            BindingResult erros,
+            RedirectAttributes attributes,
+            Model model) {
         if (erros.hasErrors() || !usuarioDTO.isSenhasIguais()) {
             if (!usuarioDTO.isSenhasIguais()) {
                 model.addAttribute("erroSenha", "As senhas precisam ser iguais");
@@ -56,7 +57,6 @@ public class UsuarioController {
     public String listaUsuarios(Model model, Authentication authentication) {
         model.addAttribute("usuarios", usuarioService.listarUsuarios());
         model.addAttribute("nome", authentication != null ? authentication.getName() : null);
-        // ID pode ser obtido via usuarioService.findByEmail(authentication.getName()).getId() se necessário
         return "/listaUsuarios";
     }
 
@@ -68,11 +68,13 @@ public class UsuarioController {
         }
         try {
             UsuarioModel usuario = usuarioService.buscarUsuarioPorId(id);
-            UsuarioDTO usuarioDTO = new UsuarioDTO();
-            usuarioDTO.setNome(usuario.getNome());
-            usuarioDTO.setEmail(usuario.getEmail());
+            UsuarioDTO usuarioDTO = new UsuarioDTO(
+                    usuario.getId(),
+                    usuario.getNome(),
+                    usuario.getEmail(),
+                    usuario.getRole() != null ? usuario.getRole().getName() : null
+            );
             model.addAttribute("usuario", usuarioDTO);
-//            model.addAttribute("id", id);
             return "/editaUsuario";
         } catch (UsuarioNaoEncontradoException e) {
             attributes.addFlashAttribute("mensagemErro", e.getMessage());
@@ -81,10 +83,11 @@ public class UsuarioController {
     }
 
     @PostMapping("/editar/{id}")
-    public String editarUsuario(@PathVariable("id") Long id,
-                                @ModelAttribute("usuario") @Valid UsuarioDTO usuarioDTO,
-                                BindingResult erros,
-                                RedirectAttributes attributes) {
+    public String editarUsuario(
+            @PathVariable("id") Long id,
+            @ModelAttribute("usuario") @Valid UsuarioDTO usuarioDTO,
+            BindingResult erros,
+            RedirectAttributes attributes) {
         if (erros.hasErrors() || !usuarioDTO.isSenhasIguais()) {
             if (!usuarioDTO.isSenhasIguais()) {
                 attributes.addFlashAttribute("mensagemErro", "As senhas precisam ser iguais");
