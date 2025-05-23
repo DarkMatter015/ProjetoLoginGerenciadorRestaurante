@@ -1,7 +1,9 @@
 package br.app.appLogin.models;
 
 import jakarta.persistence.*;
-import java.util.Set;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "usuarios")
@@ -23,6 +25,9 @@ public class UsuarioModel {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     private RoleModel role;
+
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<PedidoModel> pedidos = new ArrayList<>();
 
     // Constructors
     public UsuarioModel() {
@@ -63,5 +68,13 @@ public class UsuarioModel {
 
     public void setRole(RoleModel role) {
         this.role = role;
+    }
+
+    public List<PedidoModel> getPedidos() {
+        return pedidos;
+    }
+
+    public void setPedidos(List<PedidoModel> pedidos) {
+        this.pedidos = pedidos;
     }
 }
