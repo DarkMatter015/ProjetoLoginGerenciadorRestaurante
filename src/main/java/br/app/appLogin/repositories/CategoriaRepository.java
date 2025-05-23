@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CategoriaRepository extends JpaRepository<CategoriaModel, Long> {
     boolean existsByNome(String nome);
+    long countById(Long id);
 }

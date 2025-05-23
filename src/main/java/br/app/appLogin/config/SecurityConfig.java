@@ -24,8 +24,8 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/cadastroUsuario", "/css/**").permitAll()
-                        .requestMatchers("/listarUsuarios", "/editar/**", "/excluir/**").hasRole("ADMIN")
-                        .requestMatchers("/mesas", "/mesas/cadastrar").hasAnyRole("ADMIN", "WAITER")
+                        .requestMatchers("/listarUsuarios", "/editar/**", "/excluir/**", "/produtos", "/produtos/**", "/categorias", "/categorias/**").hasRole("ADMIN")
+                        .requestMatchers("/mesas", "/mesas/**").hasAnyRole("ADMIN", "WAITER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

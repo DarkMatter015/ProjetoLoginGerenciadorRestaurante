@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+        <html lang="pt-BR" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+        <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Categorias</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .table-responsive {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        th, td {
+            vertical-align: middle;
+            padding: 12px;
+        }
+        .table thead th {
+            background-color: #343a40;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        .table tbody tr:hover {
+            background-color: #495057;
+        }
+    </style>
+</head>
+<body class="bg-body-tertiary">
+<header>
+    <th:block th:replace="~{fragments :: navbar}"></th:block>
+</header>
+<main class="container mt-4">
+    <h1 class="h2 mb-3 fw-normal">Lista de Categorias</h1>
+
+    <!-- Success/Error Messages -->
+    <div th:if="${msg != null}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <span th:text="${msg}"></span>
+    </div>
+    <div th:if="${error != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <span th:text="${error}"></span>
+    </div>
+
+    <!-- Botão para abrir o modal de cadastro de categoria -->
+    <div sec:authorize="hasAnyRole('ADMIN', 'WAITER')">
+        <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#cadastroCategoriaModal">
+            Cadastrar Categoria
+        </button>
+    </div>
+
+    <!-- Lista de categorias -->
+    <div sec:authorize="hasAnyRole('ADMIN', 'WAITER')" class="mt-4">
+        <h3>Categorias</h3>
+        <div th:if="${categorias == null or categorias.isEmpty()}" class="alert alert-info">
+            Nenhuma categoria encontrada.
+        </div>
+        <div class="table-responsive" th:if="${categorias != null or !categorias.isEmpty()}">
+            <table class="table table-dark table-striped">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Nº de Produtos</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="categoria : ${categorias}">
+                    <td th:text="${categoria.id}"></td>
+                    <td th:text="${categoria.nome}"></td>
+                    <td th:text="${categoria.produtoCount}"></td>
+                    <td>
+                        <a th:href="@{/categorias/editar/{id}(id=${categoria.id})}" class="btn btn-sm btn-warning me-2">Editar</a>
+                        <form th:action="@{/categorias/excluir/{id}(id=${categoria.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta categoria?')">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal de Cadastro/Edição de Categoria -->
+    <div class="modal fade" id="cadastroCategoriaModal" tabindex="-1" aria-labelledby="cadastroCategoriaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cadastroCategoriaModalLabel" th:text="${categoria.id != null} ? 'Editar Categoria' : 'Cadastrar Nova Categoria'"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div th:if="${categoria != null}">
+                        <form method="post"
+                              th:action="@{/categorias/editar/{id}(id=${categoria.id})}" th:object="${categoria}">
+                            <div class="mb-3">
+                                <label for="nome" class="form-label">Nome</label>
+                                <input type="text" class="form-control" id="nome" th:field="*{nome}" required>
+                                <div class="text-danger" th:errors="*{nome}"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Salvar</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div th:unless="${categoria != null}" class="alert alert-warning">
+                        Formulário de cadastro de categoria indisponível. Acesse via /categorias.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -8,6 +8,8 @@ public record CategoriaDTO(
 
         @NotBlank(message = "O nome é obrigatório")
         @Size(max = 100, message = "O nome deve ter até 100 caracteres")
-        String nome
+        String nome,
+
+        long produtoCount
 ) {
 }
