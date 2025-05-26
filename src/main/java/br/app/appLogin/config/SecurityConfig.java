@@ -23,8 +23,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/cadastroUsuario", "/css/**").permitAll()
-                        .requestMatchers("/listarUsuarios", "/editar/**", "/excluir/**").hasRole("ADMIN")
+                        .requestMatchers("/login", "/css/**").permitAll()
+                        .requestMatchers("/usuarios/**", "/produtos", "/produtos/**", "/categorias", "/categorias/**").hasRole("ADMIN")
+                        .requestMatchers("/mesas", "/mesas/**", "/").hasAnyRole("ADMIN", "WAITER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -50,9 +51,9 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() {
         return username -> {
             try {
-                var usuario = usuarioService.findByEmail(username);
+                var usuario = usuarioService.buscarUsuarioPorEmail(username);
                 return org.springframework.security.core.userdetails.User
-                        .withUsername(usuario.getEmail())
+                        .withUsername(usuario.getNome())
                         .password(usuario.getSenha())
                         .roles(usuario.getRole().getName())
                         .build();

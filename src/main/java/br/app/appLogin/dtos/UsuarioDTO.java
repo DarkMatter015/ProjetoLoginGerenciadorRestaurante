@@ -1,41 +1,44 @@
 package br.app.appLogin.dtos;
 
+import br.app.appLogin.models.RoleModel;
 import br.app.appLogin.models.UsuarioModel;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class UsuarioDTO {
 
     private Long id;
 
     @NotBlank(message = "Nome é obrigatório")
+    @Size(max = 255, message = "Nome deve ter até 255 caracteres")
     private String nome;
 
-    @Email(message = "Email inválido")
     @NotBlank(message = "Email é obrigatório")
+    @Email(message = "Email inválido")
     private String email;
 
-    private String senha; // Opcional para edição
-    private String confirmarSenha; // Opcional para edição
+//    @Size(min = 6, message = "Senha deve ter pelo menos 6 caracteres")
+    private String senha;
 
-    // Método para transformar DTO para modelo de usuário
-    public UsuarioModel toUsuarioModel() {
-        UsuarioModel usuario = new UsuarioModel();
-        usuario.setNome(nome);
-        usuario.setEmail(email);
-        usuario.setSenha(senha);
-        return usuario;
+//    @Size(min = 6, message = "Confirmação de senha deve ter pelo menos 6 caracteres")
+    private String confirmarSenha;
+
+    @NotBlank(message = "Role é obrigatória")
+    private String roleName;
+
+    // Constructors
+    public UsuarioDTO() {
     }
 
-    // Método para validar senhas, se fornecidas
-    public boolean isSenhasIguais() {
-        if (senha == null || confirmarSenha == null) {
-            return true; // Senhas não fornecidas, considera válido
-        }
-        return senha.equals(confirmarSenha);
+    public UsuarioDTO(Long id, String nome, String email, String roleName) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.roleName = roleName;
     }
 
-    // Getters e Setters
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -70,5 +73,35 @@ public class UsuarioDTO {
 
     public void setConfirmarSenha(String confirmarSenha) {
         this.confirmarSenha = confirmarSenha;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    // Cast to UsuarioModel
+    public UsuarioModel toUsuarioModel() {
+        UsuarioModel usuario = new UsuarioModel();
+        usuario.setNome(this.nome);
+        usuario.setEmail(this.email);
+        usuario.setSenha(this.senha);
+        if (this.roleName != null) {
+            RoleModel role = new RoleModel();
+            role.setName(this.roleName);
+            usuario.setRole(role);
+        }
+        return usuario;
+    }
+
+    // Validacao de senhas
+    public boolean isSenhasIguais() {
+        if (senha == null && confirmarSenha == null) {
+            return true; // No password update
+        }
+        return senha != null && senha.equals(confirmarSenha);
     }
 }

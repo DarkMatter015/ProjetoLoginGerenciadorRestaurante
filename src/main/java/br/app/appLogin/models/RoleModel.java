@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "roles")
 public class RoleModel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -37,9 +37,14 @@ public class DatabaseInitializer implements CommandLineRunner {
             roleRepository.save(userRole);
             logger.info("Created USER role");
         }
+        if (roleRepository.findByName("WAITER").isEmpty()) {
+            RoleModel userRole = new RoleModel("WAITER");
+            roleRepository.save(userRole);
+            logger.info("Created WAITER role");
+        }
 
         // Create default admin user
-        if (!usuarioRepository.findByEmail("admin@example.com").isPresent()) {
+        if (usuarioRepository.findByEmail("admin@example.com").isEmpty()) {
             logger.info("Creating default admin user");
             UsuarioModel admin = new UsuarioModel();
             admin.setNome("Admin");

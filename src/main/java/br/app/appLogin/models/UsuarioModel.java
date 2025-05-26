@@ -1,7 +1,9 @@
 package br.app.appLogin.models;
 
 import jakarta.persistence.*;
-import java.util.Set;
+import jakarta.validation.constraints.Email;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "usuarios")
@@ -14,6 +16,7 @@ public class UsuarioModel {
     @Column(nullable = false)
     private String nome;
 
+    @Email(message = "O email deve ser valido")
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -24,8 +27,18 @@ public class UsuarioModel {
     @JoinColumn(name = "role_id", nullable = false)
     private RoleModel role;
 
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<PedidoModel> pedidos = new ArrayList<>();
+
     // Constructors
     public UsuarioModel() {
+    }
+
+    public UsuarioModel(String nome, String email, String senha, RoleModel role) {
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.role = role;
     }
 
     // Getters and Setters
@@ -63,5 +76,9 @@ public class UsuarioModel {
 
     public void setRole(RoleModel role) {
         this.role = role;
+    }
+
+    public List<PedidoModel> getPedidos() {
+        return pedidos;
     }
 }
