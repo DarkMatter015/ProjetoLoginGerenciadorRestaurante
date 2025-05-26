@@ -46,8 +46,4 @@ public class CategoriaModel {
     public List<ProdutoModel> getProdutos() {
         return produtos;
     }
-
-    public void setProdutos(List<ProdutoModel> produtos) {
-        this.produtos = produtos;
-    }
 }

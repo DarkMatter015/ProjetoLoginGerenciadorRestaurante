@@ -27,8 +27,9 @@ public class CategoriaController {
     @PreAuthorize("hasAnyRole('ADMIN', 'WAITER')")
     public String showCategoriaForm(Model model) {
         if (!model.containsAttribute("categoria")) {
-            model.addAttribute("categoria", new CategoriaDTO(null, null, 0L));
+            model.addAttribute("categoria", new CategoriaDTO(null, null));
         }
+        model.addAttribute("categoria", new CategoriaDTO(null, null));
         model.addAttribute("categorias", categoriaService.listarCategorias());
         logger.debug("Categorias loaded: {}", categoriaService.listarCategorias());
         return "categorias";
@@ -41,7 +42,6 @@ public class CategoriaController {
             logger.debug("Validation errors: {}", result.getAllErrors());
             model.addAttribute("categoria", categoriaDTO);
             model.addAttribute("categorias", categoriaService.listarCategorias());
-            model.addAttribute("categoriaService", categoriaService);
             return "categorias";
         }
         try {
@@ -52,7 +52,6 @@ public class CategoriaController {
             result.rejectValue("nome", "duplicate", e.getMessage());
             model.addAttribute("categoria", categoriaDTO);
             model.addAttribute("categorias", categoriaService.listarCategorias());
-            model.addAttribute("categoriaService", categoriaService);
             return "categorias";
         }
         return "redirect:/categorias";
@@ -68,7 +67,7 @@ public class CategoriaController {
                     .orElseThrow(() -> new CategoriaException("Categoria não encontrada com ID: " + id));
             model.addAttribute("categoria", categoria);
             model.addAttribute("categorias", categoriaService.listarCategorias());
-            return "categorias";
+            return "categoria/cadastroCategoria";
         } catch (CategoriaException e) {
             logger.error("Error loading categoria: {}", e.getMessage());
             attributes.addFlashAttribute("error", e.getMessage());
@@ -93,7 +92,6 @@ public class CategoriaController {
             result.rejectValue("nome", "duplicate", e.getMessage());
             model.addAttribute("categoria", categoriaDTO);
             model.addAttribute("categorias", categoriaService.listarCategorias());
-            model.addAttribute("categoriaService", categoriaService);
             return "categorias";
         }
         return "redirect:/categorias";

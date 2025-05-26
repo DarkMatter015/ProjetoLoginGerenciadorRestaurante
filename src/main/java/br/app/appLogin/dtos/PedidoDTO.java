@@ -14,7 +14,6 @@ public record PedidoDTO(
         @NotNull(message = "O status é obrigatório")
         String status,
 
-        @NotNull(message = "O total é obrigatório")
         BigDecimal total,
 
         @NotNull(message = "A mesa é obrigatória")

@@ -19,9 +19,8 @@ public class MesaModel {
     @Column(unique = true, nullable = false)
     private Integer numero;
 
-    @NotNull(message = "A capacidade é obrigatória")
+
     @Positive(message = "A capacidade deve ser positiva")
-    @Column(nullable = false)
     private Integer capacidade;
 
     @NotNull(message = "O status é obrigatório")
@@ -72,9 +71,5 @@ public class MesaModel {
 
     public List<PedidoModel> getPedidos() {
         return pedidos;
-    }
-
-    public void setPedidos(List<PedidoModel> pedidos) {
-        this.pedidos = pedidos;
     }
 }

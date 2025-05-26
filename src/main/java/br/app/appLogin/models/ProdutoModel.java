@@ -53,10 +53,6 @@ public class ProdutoModel {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getNome() {
         return nome;
     }
@@ -91,9 +87,5 @@ public class ProdutoModel {
 
     public List<ItemPedidoModel> getItensPedidos() {
         return itensPedidos;
-    }
-
-    public void setItensPedidos(List<ItemPedidoModel> itensPedidos) {
-        this.itensPedidos = itensPedidos;
     }
 }

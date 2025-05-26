@@ -39,7 +39,7 @@ public class CategoriaService {
     public List<CategoriaDTO> listarCategorias() {
         List<CategoriaModel> categorias = categoriaRepository.findAll();
         // Fetch product counts for all categories in one query
-        List<Map<String, Object>> rawCounts = produtoRepository.findCategoriaProductCounts();
+        List<Map<String, Object>> rawCounts = produtoRepository.countCategoriasByProduct();
         // Convert List<Map<String, Object>> to Map<Long, Long>
         Map<Long, Long> productCounts = rawCounts.stream()
                 .collect(Collectors.toMap(
@@ -50,8 +50,7 @@ public class CategoriaService {
         return categorias.stream()
                 .map(c -> new CategoriaDTO(
                         c.getId(),
-                        c.getNome(),
-                        productCounts.getOrDefault(c.getId(), 0L)
+                        c.getNome()
                 ))
                 .collect(Collectors.toList());
     }

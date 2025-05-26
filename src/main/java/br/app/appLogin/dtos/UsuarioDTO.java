@@ -16,13 +16,12 @@ public class UsuarioDTO {
 
     @NotBlank(message = "Email é obrigatório")
     @Email(message = "Email inválido")
-    @Size(max = 255, message = "Email deve ter até 255 caracteres")
     private String email;
 
-    @Size(min = 6, message = "Senha deve ter pelo menos 6 caracteres")
+//    @Size(min = 6, message = "Senha deve ter pelo menos 6 caracteres")
     private String senha;
 
-    @Size(min = 6, message = "Confirmação de senha deve ter pelo menos 6 caracteres")
+//    @Size(min = 6, message = "Confirmação de senha deve ter pelo menos 6 caracteres")
     private String confirmarSenha;
 
     @NotBlank(message = "Role é obrigatória")
@@ -84,7 +83,7 @@ public class UsuarioDTO {
         this.roleName = roleName;
     }
 
-    // Mapping to UsuarioModel
+    // Cast to UsuarioModel
     public UsuarioModel toUsuarioModel() {
         UsuarioModel usuario = new UsuarioModel();
         usuario.setNome(this.nome);
@@ -98,7 +97,7 @@ public class UsuarioDTO {
         return usuario;
     }
 
-    // Validation for matching passwords
+    // Validacao de senhas
     public boolean isSenhasIguais() {
         if (senha == null && confirmarSenha == null) {
             return true; // No password update

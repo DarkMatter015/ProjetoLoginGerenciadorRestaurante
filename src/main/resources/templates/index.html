@@ -11,11 +11,22 @@
 </head>
 <body class="bg-body-tertiary">
 <header>
-    <th:block th:replace="~{fragments :: navbar}"></th:block>
+    <th:block th:replace="~{fragments/fragments :: navbar}"></th:block>
 </header>
 <main class="container mt-4">
     <h1 class="h2 mb-3 fw-normal">Bem-vindo, <span th:text="${#authentication.name ?: 'Visitante'}"></span>!</h1>
 
+    <!-- Success Message -->
+    <div th:if="${msg != null}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <span th:text="${msg}"></span>
+    </div>
+
+    <!-- Danger Message -->
+    <div th:if="${error != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <span th:text="${error}"></span>
+    </div>
     <!-- Botão para abrir o modal de cadastro de mesa -->
     <div sec:authorize="hasAnyRole('ADMIN', 'WAITER')">
         <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#cadastroMesaModal">
@@ -83,7 +94,7 @@
         </div>
     </div>
 </main>
-<footer th:replace="~{fragments :: footer}"></footer>
+<footer th:replace="~{fragments/fragments :: footer}"></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

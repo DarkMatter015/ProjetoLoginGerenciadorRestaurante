@@ -1,70 +1,73 @@
 package br.app.appLogin.controllers;
 
 import br.app.appLogin.dtos.UsuarioDTO;
-import br.app.appLogin.exceptions.UsuarioAtualLogadoException;
-import br.app.appLogin.exceptions.UsuarioNaoEncontradoException;
+import br.app.appLogin.exceptions.UsuarioException;
 import br.app.appLogin.models.UsuarioModel;
+import br.app.appLogin.services.RoleService;
 import br.app.appLogin.services.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
+@RequestMapping("/usuarios")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final RoleService roleService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, RoleService roleService) {
         this.usuarioService = usuarioService;
+        this.roleService = roleService;
     }
 
-    @GetMapping("/cadastroUsuario")
-    public String getCadastroUsuario(Model model) {
+    @GetMapping("/cadastrar")
+    public String cadastroUsuario(Model model) {
         model.addAttribute("novoUsuario", new UsuarioDTO());
-        return "/cadastroUsuario";
+        model.addAttribute("roles", roleService.listarRoles());
+        return "usuario/cadastroUsuario";
     }
 
-    @PostMapping("/cadastroUsuario")
-    public String postCadastroUsuario(
+    @PostMapping("/cadastrar")
+    public String cadastroUsuario(
             @ModelAttribute("novoUsuario") @Valid UsuarioDTO usuarioDTO,
             BindingResult erros,
             RedirectAttributes attributes,
             Model model) {
         if (erros.hasErrors() || !usuarioDTO.isSenhasIguais()) {
             if (!usuarioDTO.isSenhasIguais()) {
-                model.addAttribute("erroSenha", "As senhas precisam ser iguais");
+                model.addAttribute("error", "As senhas precisam ser iguais");
             }
-            return "/cadastroUsuario";
+            model.addAttribute("roles", roleService.listarRoles());
+            return "usuario/cadastroUsuario";
         }
         try {
             usuarioService.cadastrarUsuario(usuarioDTO.toUsuarioModel());
             attributes.addFlashAttribute("msg", "Usuário cadastrado com sucesso!");
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("erro", e.getMessage());
-            return "/cadastroUsuario";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("roles", roleService.listarRoles());
+            return "usuario/cadastroUsuario";
         }
-        return "redirect:/cadastroUsuario";
+        return "redirect:/usuarios";
     }
 
-    @GetMapping("/listarUsuarios")
+    @GetMapping
     public String listaUsuarios(Model model, Authentication authentication) {
         model.addAttribute("usuarios", usuarioService.listarUsuarios());
         model.addAttribute("nome", authentication != null ? authentication.getName() : null);
-        return "/listaUsuarios";
+        return "usuario/usuarios";
     }
 
     @GetMapping("/editar/{id}")
     public String editarUsuario(@PathVariable("id") Long id, Model model, RedirectAttributes attributes) {
         if (id <= 0) {
-            attributes.addFlashAttribute("mensagemErro", "ID inválido");
-            return "redirect:/listarUsuarios";
+            attributes.addFlashAttribute("error", "ID inválido");
+            return "redirect:/usuarios";
         }
         try {
             UsuarioModel usuario = usuarioService.buscarUsuarioPorId(id);
@@ -75,10 +78,11 @@ public class UsuarioController {
                     usuario.getRole() != null ? usuario.getRole().getName() : null
             );
             model.addAttribute("usuario", usuarioDTO);
-            return "/editaUsuario";
-        } catch (UsuarioNaoEncontradoException e) {
-            attributes.addFlashAttribute("mensagemErro", e.getMessage());
-            return "redirect:/listarUsuarios";
+            model.addAttribute("roles", roleService.listarRoles());
+            return "usuario/editaUsuario";
+        } catch (UsuarioException e) {
+            attributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/usuarios";
         }
     }
 
@@ -87,24 +91,31 @@ public class UsuarioController {
             @PathVariable("id") Long id,
             @ModelAttribute("usuario") @Valid UsuarioDTO usuarioDTO,
             BindingResult erros,
+            Model model,
             RedirectAttributes attributes) {
+
         if (erros.hasErrors() || !usuarioDTO.isSenhasIguais()) {
             if (!usuarioDTO.isSenhasIguais()) {
-                attributes.addFlashAttribute("mensagemErro", "As senhas precisam ser iguais");
+                model.addAttribute("error", "As senhas precisam ser iguais");
             }
-            return "/editaUsuario";
+
+            model.addAttribute("error", erros.getAllErrors());
+
+            model.addAttribute("roles", roleService.listarRoles());
+            return "usuario/editaUsuario";
         }
         try {
             usuarioService.atualizarUsuario(id, usuarioDTO);
             attributes.addFlashAttribute("msg", "Usuário atualizado com sucesso!");
-        } catch (UsuarioNaoEncontradoException e) {
-            attributes.addFlashAttribute("mensagemErro", e.getMessage());
-            return "redirect:/listarUsuarios";
+        } catch (UsuarioException e) {
+            attributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/usuarios";
         } catch (IllegalArgumentException e) {
-            attributes.addFlashAttribute("mensagemErro", e.getMessage());
-            return "/editaUsuario";
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("roles", roleService.listarRoles());
+            return "usuario/editaUsuario";
         }
-        return "redirect:/listarUsuarios";
+        return "redirect:/usuarios";
     }
 
     @GetMapping("/excluir/{id}")
@@ -112,9 +123,9 @@ public class UsuarioController {
         try {
             usuarioService.excluirUsuarioPorId(id);
             attributes.addFlashAttribute("msg", "Usuário excluído com sucesso!");
-        } catch (UsuarioNaoEncontradoException | UsuarioAtualLogadoException e) {
+        } catch (UsuarioException e) {
             attributes.addFlashAttribute("erro", e.getMessage());
         }
-        return "redirect:/listarUsuarios";
+        return "redirect:/usuarios";
     }
 }

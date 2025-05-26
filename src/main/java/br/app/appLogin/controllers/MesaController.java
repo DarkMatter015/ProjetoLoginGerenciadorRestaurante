@@ -51,6 +51,8 @@ public class MesaController {
         } catch (MesaException e) {
             logger.error("Error creating mesa: {}", e.getMessage());
             result.rejectValue("numero", "duplicate", e.getMessage());
+
+            model.addAttribute("error", e.getMessage());
             model.addAttribute("mesa", mesaDTO);
             model.addAttribute("mesas", mesaService.listarMesas());
             return "index";

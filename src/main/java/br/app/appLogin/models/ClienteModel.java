@@ -17,7 +17,7 @@ public class ClienteModel {
     @Column(nullable = false)
     private String nome;
 
-    @NotBlank(message = "O nome é obrigatório")
+    @NotBlank(message = "O cpf é obrigatório")
     @Column(nullable = false)
     private String cpf;
 
@@ -28,7 +28,7 @@ public class ClienteModel {
     public ClienteModel() {
     }
 
-    public ClienteModel(String nome) {
+    public ClienteModel(String nome, String cpf) {
         this.nome = nome;
     }
 
@@ -55,9 +55,5 @@ public class ClienteModel {
 
     public List<PedidoModel> getPedidos() {
         return pedidos;
-    }
-
-    public void setPedidos(List<PedidoModel> pedidos) {
-        this.pedidos = pedidos;
     }
 }

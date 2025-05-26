@@ -23,7 +23,6 @@ public class PedidoModel {
     @Column(nullable = false)
     private String status;
 
-    @NotNull(message = "O total é obrigatório")
     @Column(nullable = false)
     private BigDecimal total;
 
@@ -112,9 +111,5 @@ public class PedidoModel {
 
     public List<ItemPedidoModel> getItensPedidos() {
         return itensPedidos;
-    }
-
-    public void setItensPedidos(List<ItemPedidoModel> itensPedidos) {
-        this.itensPedidos = itensPedidos;
     }
 }

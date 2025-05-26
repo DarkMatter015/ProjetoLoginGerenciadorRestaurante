@@ -1,7 +1,7 @@
 package br.app.appLogin.models;
 
 import jakarta.persistence.*;
-
+import jakarta.validation.constraints.Email;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +16,7 @@ public class UsuarioModel {
     @Column(nullable = false)
     private String nome;
 
+    @Email(message = "O email deve ser valido")
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -31,6 +32,13 @@ public class UsuarioModel {
 
     // Constructors
     public UsuarioModel() {
+    }
+
+    public UsuarioModel(String nome, String email, String senha, RoleModel role) {
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.role = role;
     }
 
     // Getters and Setters
@@ -72,9 +80,5 @@ public class UsuarioModel {
 
     public List<PedidoModel> getPedidos() {
         return pedidos;
-    }
-
-    public void setPedidos(List<PedidoModel> pedidos) {
-        this.pedidos = pedidos;
     }
 }

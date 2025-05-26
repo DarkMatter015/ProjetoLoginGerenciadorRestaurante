@@ -17,5 +17,5 @@ public interface ProdutoRepository extends JpaRepository<ProdutoModel, Long> {
             "FROM ProdutoModel p " +
             "WHERE p.categoria.id IS NOT NULL " +
             "GROUP BY p.categoria.id")
-    List<Map<String, Object>> findCategoriaProductCounts();
+    List<Map<String, Object>> countCategoriasByProduct();
 }

@@ -16,7 +16,7 @@
           <a class="nav-link" th:href="@{/}">Home</a>
         </li>
         <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-          <a class="nav-link" th:href="@{/listarUsuarios}">Usuários</a>
+          <a class="nav-link" th:href="@{/usuarios}">Usuários</a>
         </li>
         <li class="nav-item" sec:authorize="hasRole('ADMIN')">
           <a class="nav-link" th:href="@{/categorias}">Categorias</a>
@@ -30,7 +30,7 @@
           <a class="nav-link" th:href="@{/login}">Login</a>
         </li>
         <li class="nav-item" sec:authorize="!isAuthenticated()">
-          <a class="nav-link" th:href="@{/cadastroUsuario}">Cadastrar Usuário</a>
+          <a class="nav-link" th:href="@{/usuarios/cadastrar}">Cadastrar Usuário</a>
         </li>
         <li class="nav-item" sec:authorize="isAuthenticated()">
           <a class="nav-link" th:href="@{/sair}">Sair</a>
