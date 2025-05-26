@@ -27,6 +27,7 @@ public class CategoriaService {
         this.produtoRepository = produtoRepository;
     }
 
+    @Transactional(readOnly = true)
     public CategoriaModel buscarCategoriaPorId(Long id) throws CategoriaException {
         logger.info("Buscando categoria com ID: {}", id);
         return categoriaRepository.findById(id)

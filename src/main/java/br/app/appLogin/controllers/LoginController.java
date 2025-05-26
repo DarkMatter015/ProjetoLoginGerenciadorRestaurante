@@ -42,10 +42,7 @@ public class LoginController {
     @GetMapping("/acesso-negado")
     public String acessoNegado(Model model, Authentication authentication) {
         model.addAttribute("nome", authentication != null ? authentication.getName() : null);
-        model.addAttribute("erro", "Acesso negado: você não tem permissão para acessar esta página.");
-        if (!model.containsAttribute("mesa")) {
-            model.addAttribute("mesa", new MesaDTO(null, null, null, null));
-        }
-        return "index";
+        model.addAttribute("error", "Acesso negado: você não tem permissão para acessar esta página.");
+        return "login";
     }
 }

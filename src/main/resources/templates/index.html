@@ -28,7 +28,7 @@
         <span th:text="${error}"></span>
     </div>
     <!-- Botão para abrir o modal de cadastro de mesa -->
-    <div sec:authorize="hasAnyRole('ADMIN', 'WAITER')">
+    <div sec:authorize="hasRole('ADMIN')">
         <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#cadastroMesaModal">
             Cadastrar Mesa
         </button>
@@ -44,6 +44,8 @@
             <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center" th:each="mesa : ${mesas}">
                 <div class="table-square">
                     <span th:text="${mesa.numero}"></span>
+                    <span th:text="${mesa.capacidade}"></span>
+                    <span th:text="${mesa.status}"></span>
                 </div>
             </div>
         </div>
@@ -85,9 +87,6 @@
                                 <button type="submit" class="btn btn-primary">Salvar</button>
                             </div>
                         </form>
-                    </div>
-                    <div th:unless="${mesa != null}" class="alert alert-warning">
-                        Formulário de cadastro de mesa indisponível. Acesse via /mesas.
                     </div>
                 </div>
             </div>

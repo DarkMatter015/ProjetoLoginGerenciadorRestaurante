@@ -4,7 +4,8 @@ import br.app.appLogin.dtos.MesaDTO;
 import br.app.appLogin.exceptions.MesaException;
 import br.app.appLogin.models.MesaModel;
 import br.app.appLogin.repositories.MesaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +15,29 @@ import java.util.stream.Collectors;
 @Service
 public class MesaService {
 
-    @Autowired
-    private MesaRepository mesaRepository;
+    private static final Logger logger = LoggerFactory.getLogger(MesaService.class);
+    private final MesaRepository mesaRepository;
+
+    public MesaService(MesaRepository mesaRepository) {
+        this.mesaRepository = mesaRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public MesaModel buscarMesaPorId(Long id) throws MesaException {
+        logger.info("Buscando mesa com ID: {}", id);
+        return mesaRepository.findById(id)
+                .orElseThrow(() -> new MesaException("Mesa com ID: " + id + " não encontrada!"));
+    }
+
+    @Transactional(readOnly = true)
+    public MesaModel buscarMesaPorNumero(Integer numero) throws MesaException {
+        logger.info("Buscando mesa com numero: {}", numero);
+        return mesaRepository.findByNumero(numero)
+                .orElseThrow(() -> new MesaException("Mesa com numero: " + numero + " não encontrada!"));
+    }
 
     @Transactional
-    public void criarMesa(MesaDTO mesaDTO) {
+    public void cadastrarMesa(MesaDTO mesaDTO) {
         if (mesaDTO == null || mesaDTO.numero() == null || mesaDTO.capacidade() == null || mesaDTO.status() == null) {
             throw new MesaException("Dados da mesa são obrigatórios");
         }
@@ -53,9 +72,11 @@ public class MesaService {
     }
 
     @Transactional
-    public void excluirMesa(Long id) {
-        if (!mesaRepository.existsById(id)) {
-            throw new MesaException("Mesa não encontrada com ID: " + id);
+    public void excluirMesaPorId(Long id) {
+        MesaModel mesa = mesaRepository.findById(id)
+                .orElseThrow(() -> new MesaException("Mesa não encontrada com ID " + id));
+        if (mesa.getStatus().equalsIgnoreCase("OCCUPIED") || mesa.getStatus().equalsIgnoreCase("RESERVED")) {
+            throw new MesaException("Não é possível excluir a mesa pois ela está Ocupada/Reservada");
         }
         mesaRepository.deleteById(id);
     }

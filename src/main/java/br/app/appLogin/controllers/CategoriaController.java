@@ -39,9 +39,9 @@ public class CategoriaController {
     @PostMapping("/cadastrar")
     @PreAuthorize("hasRole('ADMIN')")
     public String cadastrarCategoria(@ModelAttribute("novaCategoria") @Valid CategoriaDTO categoriaDTO, 
-             BindingResult erros, 
-             Model model, 
-             RedirectAttributes attributes) {
+                                     BindingResult erros,
+                                     Model model,
+                                     RedirectAttributes attributes) {
 
         if (erros.hasErrors()) {
             model.addAttribute("error", erros.getAllErrors());
