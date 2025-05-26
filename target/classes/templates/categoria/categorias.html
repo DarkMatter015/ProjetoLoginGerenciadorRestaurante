@@ -22,6 +22,11 @@
         <span th:text="${msg}"></span>
     </div>
 
+    <div class="alert alert-danger alert-dismissible fade show" th:if="${error}">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <span th:text="${error}"></span>
+    </div>
+
     <!-- Botão para abrir o modal de cadastro de produto -->
     <div sec:authorize="hasAnyRole('ADMIN', 'WAITER')">
         <a th:href="@{/categorias/cadastrar}">
@@ -35,7 +40,7 @@
     <!-- Lista de produtos -->
     <div sec:authorize="hasAnyRole('ADMIN', 'WAITER')" class="mt-4">
         <h3>Produtos</h3>
-        <div th:if="${categoria == null or categoria.isEmpty()}" class="alert alert-info">
+        <div th:if="${categorias == null or categorias.isEmpty()}" class="alert alert-info">
             Nenhuma categoria encontrada.
         </div>
         <div class="table-responsive">
@@ -52,10 +57,10 @@
                 <tr th:each="categoria : ${categorias}">
                     <td th:text="${categoria.id}"></td>
                     <td th:text="${categoria.nome}"></td>
-                    <td th:text="${categoria.produtoCount()}"></td>
+                    <td th:text="${categoria.totalDeProdutos}"></td>
                     <td>
                         <a th:href="@{/categorias/editar/{id}(id=${categoria.id})}" class="btn btn-sm btn-primary">Editar</a>
-                        <a th:href="@{/categorias/excluir/{id}(id=${categoria.id})}" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta categoria?')">Excluir</a>
+                        <a th:href="@{/categorias/excluir/{id}(id=${categoria.id})}" class="btn btn-sm btn-danger">Excluir</a>
                     </td>
                 </tr>
                 </tbody>

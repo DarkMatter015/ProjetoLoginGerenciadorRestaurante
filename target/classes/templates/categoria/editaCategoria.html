@@ -14,7 +14,7 @@
     <th:block th:replace="~{fragments/fragments :: navbar}"></th:block>
 </header>
 <main class="container mt-4">
-    <h1 class="h2 mb-3 fw-normal">Cadastrar Categoria</h1>
+    <h1 class="h2 mb-3 fw-normal">Editar Categoria</h1>
 
     <!-- Success Message -->
     <div th:if="${msg != null}" class="alert alert-success alert-dismissible fade show" role="alert">
@@ -28,7 +28,7 @@
     </div>
 
     <div class="form-container">
-        <form th:action="@{/categorias/cadastrar}" th:object="${novaCategoria}" method="post">
+        <form th:action="@{/categorias/editar/{id}(id=${id})}" th:object="${categoria}" method="post">
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome</label>
                 <input type="text" class="form-control" id="nome" th:value="*{nome}" th:field="*{nome}" required>

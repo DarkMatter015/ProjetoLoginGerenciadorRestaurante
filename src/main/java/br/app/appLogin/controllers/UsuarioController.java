@@ -26,14 +26,14 @@ public class UsuarioController {
     }
 
     @GetMapping("/cadastrar")
-    public String cadastroUsuario(Model model) {
+    public String cadastrarUsuario(Model model) {
         model.addAttribute("novoUsuario", new UsuarioDTO());
         model.addAttribute("roles", roleService.listarRoles());
         return "usuario/cadastroUsuario";
     }
 
     @PostMapping("/cadastrar")
-    public String cadastroUsuario(
+    public String cadastrarUsuario(
             @ModelAttribute("novoUsuario") @Valid UsuarioDTO usuarioDTO,
             BindingResult erros,
             RedirectAttributes attributes,
@@ -57,7 +57,7 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public String listaUsuarios(Model model, Authentication authentication) {
+    public String listarUsuarios(Model model, Authentication authentication) {
         model.addAttribute("usuarios", usuarioService.listarUsuarios());
         model.addAttribute("nome", authentication != null ? authentication.getName() : null);
         return "usuario/usuarios";

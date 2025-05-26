@@ -19,7 +19,7 @@ import java.util.Optional;
 @Service
 public class UsuarioService {
 
-    private final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
     private final UsuarioRepository usuarioRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;

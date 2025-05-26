@@ -45,11 +45,18 @@
         <span th:text="${msg}"></span>
     </div>
 
+    <div class="alert alert-danger alert-dismissible fade show" th:if="${error}">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <span th:text="${error}"></span>
+    </div>
+
     <!-- Botão para abrir o modal de cadastro de produto -->
     <div sec:authorize="hasAnyRole('ADMIN', 'WAITER')">
-        <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#cadastroProdutoModal">
-            Cadastrar Produto
-        </button>
+        <a th:href="@{/produtos/cadastrar}">
+            <button type="button" class="btn btn-primary mb-4">
+                Cadastrar Produto
+            </button>
+        </a>
     </div>
 
     <!-- Lista de produtos -->
@@ -67,6 +74,7 @@
                     <th>Preço (R$)</th>
                     <th>Categoria</th>
                     <th>Disponível</th>
+                    <th>Ações</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -83,63 +91,13 @@
                                 <span th:class="${produto.disponivel} ? 'text-success' : 'text-danger'"
                                       th:text="${produto.disponivel} ? 'Sim' : 'Não'"></span>
                     </td>
+                    <td>
+                        <a th:href="@{/produtos/editar/{id}(id=${produto.id})}" class="btn btn-sm btn-primary">Editar</a>
+                        <a th:href="@{/produtos/excluir/{id}(id=${produto.id})}" class="btn btn-sm btn-danger">Excluir</a>
+                    </td>
                 </tr>
                 </tbody>
             </table>
-        </div>
-    </div>
-
-    <!-- Modal de Cadastro de Produto -->
-    <div class="modal fade" id="cadastroProdutoModal" tabindex="-1" aria-labelledby="cadastroProdutoModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="cadastroProdutoModalLabel">Cadastrar Novo Produto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div th:if="${produto != null}">
-                        <form th:action="@{/produtos/cadastrar}" th:object="${produto}" method="post">
-                            <div class="mb-3">
-                                <label for="nome" class="form-label">Nome</label>
-                                <input type="text" class="form-control" id="nome" th:field="*{nome}" required>
-                                <div class="text-danger" th:errors="*{nome}"></div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="preco" class="form-label">Preço (R$)</label>
-                                <input type="number" step="0.01" class="form-control" id="preco" th:field="*{preco}" required>
-                                <div class="text-danger" th:errors="*{preco}"></div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="categoriaId" class="form-label">Categoria</label>
-                                <select class="form-select" id="categoriaId" th:field="*{categoriaId}" required>
-                                    <option value="">Selecione a categoria</option>
-                                    <option th:each="cat : ${categorias}"
-                                            th:value="${cat.id}"
-                                            th:text="${cat.nome}"></option>
-                                </select>
-                                <div class="text-danger" th:errors="*{categoriaId}"></div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="disponivel" class="form-label">Disponível</label>
-                                <select class="form-select" id="disponivel" th:field="*{disponivel}" required>
-                                    <option value="">Selecione a disponibilidade</option>
-                                    <option value="true">Sim</option>
-                                    <option value="false">Não</option>
-                                </select>
-                                <div class="text-danger" th:errors="*{disponivel}"></div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-primary">Salvar</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div th:unless="${produto != null}" class="alert alert-warning">
-                        Formulário de cadastro de produto indisponível. Acesse via /produtos.
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </main>

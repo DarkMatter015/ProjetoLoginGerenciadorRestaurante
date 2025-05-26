@@ -14,7 +14,7 @@
     <th:block th:replace="~{fragments/fragments :: navbar}"></th:block>
 </header>
 <main class="container mt-4">
-    <h1 class="h2 mb-3 fw-normal">Categoria</h1>
+    <h1 class="h2 mb-3 fw-normal">Cadastrar Categoria</h1>
 
     <!-- Success Message -->
     <div th:if="${msg != null}" class="alert alert-success alert-dismissible fade show" role="alert">
@@ -22,15 +22,20 @@
         <span th:text="${msg}"></span>
     </div>
 
+    <div class="alert alert-danger alert-dismissible fade show" th:if="${error}">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <span th:text="${error}"></span>
+    </div>
+
     <div class="form-container">
-        <form th:action="@{/categorias/cadastrar}" th:object="${categoria}" method="post">
+        <form th:action="@{/categorias/cadastrar}" th:object="${novaCategoria}" method="post">
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome</label>
                 <input type="text" class="form-control" id="nome" th:value="*{nome}" th:field="*{nome}" required>
                 <div class="text-danger" th:errors="*{nome}"></div>
             </div>
             <div class="modal-footer">
-                <a th:src="@{/categorias}"><button type="button" class="btn btn-secondary">Voltar</button></a>
+                <a th:href="@{/categorias}"><button type="button" class="btn btn-secondary">Voltar</button></a>
                 <button type="submit" class="btn btn-primary">Salvar</button>
             </div>
         </form>

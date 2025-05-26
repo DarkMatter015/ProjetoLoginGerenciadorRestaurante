@@ -1,12 +1,14 @@
 package br.app.appLogin.services;
 
 import br.app.appLogin.dtos.ProdutoDTO;
+import br.app.appLogin.exceptions.CategoriaException;
 import br.app.appLogin.exceptions.ProdutoException;
 import br.app.appLogin.models.CategoriaModel;
 import br.app.appLogin.models.ProdutoModel;
 import br.app.appLogin.repositories.CategoriaRepository;
 import br.app.appLogin.repositories.ProdutoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,14 +18,23 @@ import java.util.stream.Collectors;
 @Service
 public class ProdutoService {
 
-    @Autowired
+    private static final Logger logger = LoggerFactory.getLogger(CategoriaService.class);
     private ProdutoRepository produtoRepository;
-
-    @Autowired
     private CategoriaRepository categoriaRepository;
 
+    public ProdutoService(ProdutoRepository produtoRepository, CategoriaRepository categoriaRepository) {
+        this.produtoRepository = produtoRepository;
+        this.categoriaRepository = categoriaRepository;
+    }
+
+    public ProdutoModel buscarProdutoPorId(Long id) throws CategoriaException {
+        logger.info("Buscando produto com ID: {}", id);
+        return produtoRepository.findById(id)
+                .orElseThrow(() -> new ProdutoException("Produto com ID: " + id + " não encontrado!"));
+    }
+
     @Transactional
-    public void criarProduto(ProdutoDTO produtoDTO) {
+    public void cadastrarProduto(ProdutoDTO produtoDTO) {
         if (produtoDTO == null || produtoDTO.nome() == null || produtoDTO.preco() == null ||
                 produtoDTO.disponivel() == null || produtoDTO.categoriaId() == null) {
             throw new ProdutoException("Dados do produto são obrigatórios");
@@ -71,7 +82,7 @@ public class ProdutoService {
     }
 
     @Transactional
-    public void excluirProduto(Long id) {
+    public void excluirProdutoPorId(Long id) {
         if (!produtoRepository.existsById(id)) {
             throw new ProdutoException("Produto não encontrado com ID: " + id);
         }

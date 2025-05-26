@@ -5,7 +5,8 @@ import br.app.appLogin.exceptions.CategoriaException;
 import br.app.appLogin.models.CategoriaModel;
 import br.app.appLogin.repositories.CategoriaRepository;
 import br.app.appLogin.repositories.ProdutoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,14 +17,24 @@ import java.util.stream.Collectors;
 @Service
 public class CategoriaService {
 
-    @Autowired
-    private CategoriaRepository categoriaRepository;
 
-    @Autowired
-    private ProdutoRepository produtoRepository;
+    private static final Logger logger = LoggerFactory.getLogger(CategoriaService.class);
+    private final CategoriaRepository categoriaRepository;
+    private final ProdutoRepository produtoRepository;
+
+    public CategoriaService(CategoriaRepository categoriaRepository, ProdutoRepository produtoRepository) {
+        this.categoriaRepository = categoriaRepository;
+        this.produtoRepository = produtoRepository;
+    }
+
+    public CategoriaModel buscarCategoriaPorId(Long id) throws CategoriaException {
+        logger.info("Buscando categoria com ID: {}", id);
+        return categoriaRepository.findById(id)
+                .orElseThrow(() -> new CategoriaException("Categoria com ID: " + id + " não encontrado!"));
+    }
 
     @Transactional
-    public void criarCategoria(CategoriaDTO categoriaDTO) {
+    public void cadastrarCategoria(CategoriaDTO categoriaDTO) {
         if (categoriaDTO == null || categoriaDTO.nome() == null) {
             throw new CategoriaException("O nome da categoria é obrigatório");
         }
@@ -50,7 +61,8 @@ public class CategoriaService {
         return categorias.stream()
                 .map(c -> new CategoriaDTO(
                         c.getId(),
-                        c.getNome()
+                        c.getNome(),
+                        productCounts.getOrDefault(c.getId(), 0L)
                 ))
                 .collect(Collectors.toList());
     }
@@ -67,12 +79,12 @@ public class CategoriaService {
     }
 
     @Transactional
-    public void excluirCategoria(Long id) {
+    public void excluirCategoriaPorId(Long id) {
         CategoriaModel categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new CategoriaException("Categoria não encontrada com ID: " + id));
         long productCount = produtoRepository.countByCategoriaId(id);
         if (productCount > 0) {
-            throw new CategoriaException("Não é possível excluir a categoria pois ela está vinculada a " + productCount + " produto(s)");
+            throw new CategoriaException("Não é possível excluir a categoria" + categoria.getNome() + " pois ela está vinculada a " + productCount + " produto(s)");
         }
         categoriaRepository.deleteById(id);
     }
